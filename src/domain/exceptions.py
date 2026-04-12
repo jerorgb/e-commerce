@@ -1,17 +1,23 @@
 """
-Excepciones específicas del dominio.
-Representan errores de negocio, no errores técnicos.
+Excepciones específicas del dominio para el sistema de e-commerce.
+
+Este módulo define excepciones personalizadas que representan errores de negocio,
+no errores técnicos. Estas excepciones ayudan a manejar situaciones específicas
+del dominio como productos no encontrados o datos inválidos.
 """
 
 class ProductNotFoundError(Exception):
     """
-    Se lanza cuando se busca un producto que no existe.
-    
-    TODO: Implementa el constructor:
-    - Debe aceptar un product_id opcional
-    - Mensaje por defecto: "Producto no encontrado"
-    - Si se pasa product_id: "Producto con ID {product_id} no encontrado"
+    Excepción lanzada cuando se busca un producto que no existe.
+
+    Esta excepción se usa en los repositorios y servicios cuando
+    no se puede encontrar un producto con el ID especificado.
+
+    Args:
+        product_id (int, optional): ID del producto que no se encontró.
+                                   Si se proporciona, se incluye en el mensaje.
     """
+
     def __init__(self, product_id: int = None):
         if product_id is not None:
             super().__init__(f"Producto con ID {product_id} no encontrado")
@@ -22,24 +28,31 @@ class ProductNotFoundError(Exception):
 
 class InvalidProductDataError(Exception):
     """
-    Se lanza cuando los datos de un producto son inválidos.
-    
-    TODO: Implementa el constructor:
-    - Debe aceptar un mensaje personalizado
-    - Mensaje por defecto: "Datos de producto inválidos"
+    Excepción lanzada cuando los datos de un producto son inválidos.
+
+    Esta excepción se usa cuando se intenta crear o actualizar un producto
+    con datos que no cumplen las reglas de negocio.
+
+    Args:
+        message (str): Mensaje descriptivo del error de validación.
+                      Por defecto: "Datos de producto inválidos".
     """
+
     def __init__(self, message: str = "Datos de producto inválidos"):
         super().__init__(message)
 
 
 class ChatServiceError(Exception):
     """
-    Se lanza cuando hay un error en el servicio de chat.
-    
-    TODO: Implementa el constructor:
-    - Debe aceptar un mensaje personalizado
-    - Mensaje por defecto: "Error en el servicio de chat"
+    Excepción lanzada cuando hay un error en el servicio de chat.
+
+    Esta excepción se usa para manejar errores relacionados con el procesamiento
+    de mensajes de chat, integración con IA o problemas de contexto.
+
+    Args:
+        message (str): Mensaje descriptivo del error en el servicio de chat.
+                      Por defecto: "Error en el servicio de chat".
     """
-    pass
+
     def __init__(self, message: str = "Error en el servicio de chat"):
         super().__init__(message)

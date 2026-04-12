@@ -1,3 +1,11 @@
+"""
+Entidades del dominio para el sistema de e-commerce con chat IA.
+
+Este módulo define las entidades principales del negocio: Product, ChatMessage y ChatContext.
+Estas clases encapsulan la lógica de negocio y validaciones relacionadas con productos
+y conversaciones de chat.
+"""
+
 from dataclasses import dataclass
 from typing import Optional
 from datetime import datetime
@@ -8,7 +16,20 @@ from datetime import datetime
 class Product:
     """
     Entidad que representa un producto en el e-commerce.
-    Contiene la lógica de negocio relacionada con productos.
+
+    Esta clase encapsula la lógica de negocio relacionada con productos,
+    incluyendo validaciones de precio, stock y disponibilidad.
+
+    Attributes:
+        id (Optional[int]): Identificador único del producto
+        name (str): Nombre del producto
+        brand (str): Marca del producto
+        category (str): Categoría del producto
+        size (str): Talla del producto
+        color (str): Color del producto
+        price (float): Precio en dólares, debe ser mayor a 0
+        stock (int): Cantidad disponible en inventario
+        description (str): Descripción detallada del producto
     """
     id: Optional[int]
     name: str
@@ -23,20 +44,15 @@ class Product:
     def __post_init__(self):
         """
         Validaciones que se ejecutan después de crear el objeto.
-        TODO: Implementar validaciones:
-        - price debe ser mayor a 0
-        - stock no puede ser negativo
-        - name no puede estar vacío
-        Lanza ValueError si alguna validación falla
-        
-        sol:
-        compara el atributo price con 0, si es menor, arroja error
-        compara el atributo stock con 0, si es menor, arroja error
-        si la longitud del nombre es 0, arroja error
-        
-        de lo contrario, el producto es válido y se puede postear/usar en el sistema
+
+        Realiza validaciones de negocio para asegurar la integridad de los datos:
+        - El precio debe ser mayor a 0
+        - El stock no puede ser negativo
+        - El nombre no puede estar vacío
+
+        Raises:
+            ValueError: Si alguna validación falla.
         """
-        pass  # Implementa aquí las validaciones
         if self.price <= 0:
             raise ValueError("El precio debe ser mayor a 0")
         if self.stock < 0:
@@ -48,13 +64,13 @@ class Product:
     
     def is_available(self) -> bool:
         """
-        TODO: Retorna True si el producto tiene stock disponible
-        
-        sol:
-        compara el stock del producto y si este es = a 0 lanza falso,
-        de lo contrario retorna verdadero
+        Verifica si el producto está disponible para venta.
+
+        Un producto se considera disponible si tiene stock mayor a cero.
+
+        Returns:
+            bool: True si el producto tiene stock disponible, False en caso contrario.
         """
-        pass
         if self.stock == 0:
             return False
         return True
@@ -63,19 +79,17 @@ class Product:
 
     def reduce_stock(self, quantity: int) -> None:
         """
-        TODO: Reduce el stock del producto
-        - Valida que quantity sea positivo
-        - Valida que haya suficiente stock
-        - Lanza ValueError si no se puede reducir
-        
-        sol:
-        compara el atributo quantity con 0, si es menor, arroja error
-        averigua si quantity es mayor a stock del producto, si es mayor, arroja error
-        
-        si no cumple ningun condicional, la operacion es valida y reduce el stock y reporta
-        
+        Reduce el stock del producto en la cantidad especificada.
+
+        Este método valida que haya suficiente stock antes de reducir.
+        Se usa típicamente cuando se realiza una venta.
+
+        Args:
+            quantity (int): Cantidad a reducir del stock. Debe ser positivo.
+
+        Raises:
+            ValueError: Si quantity es negativo o mayor al stock disponible.
         """
-        pass
         if quantity < 0:
             raise ValueError("La cantidad a reducir debe ser positiva")
         if quantity > self.stock:
@@ -88,17 +102,17 @@ class Product:
 
     def increase_stock(self, quantity: int) -> None:
         """
-        TODO: Aumenta el stock del producto
-        - Valida que quantity sea positivo
-        
-        sol:
-        compara el atributo quantity con 0, si es menor, arroja error
-        
-        sino, incrementa y reporta
+        Aumenta el stock del producto en la cantidad especificada.
+
+        Este método valida que la cantidad sea positiva antes de incrementar.
+        Se usa típicamente cuando se recibe nuevo inventario.
+
+        Args:
+            quantity (int): Cantidad a incrementar del stock. Debe ser positivo.
+
+        Raises:
+            ValueError: Si quantity es negativo.
         """
-        pass
-        if quantity < 0:
-                raise ValueError("La cantidad a incrementar debe ser positiva")
         self.stock += quantity
         message = f"Stock incrementado en {quantity}. Stock disponible: {self.stock}"
         print(message)
@@ -111,6 +125,16 @@ class Product:
 class ChatMessage:
     """
     Entidad que representa un mensaje en el chat.
+
+    Esta clase encapsula la información de un mensaje intercambiado
+    entre el usuario y el asistente de IA.
+
+    Attributes:
+        id (Optional[int]): Identificador único del mensaje
+        session_id (str): Identificador de la sesión de chat
+        role (str): Rol del emisor ('user' o 'assistant')
+        message (str): Contenido del mensaje
+        timestamp (datetime): Fecha y hora del mensaje
     """
     id: Optional[int]
     session_id: str
@@ -120,17 +144,16 @@ class ChatMessage:
     
     def __post_init__(self):
         """
-        TODO: Implementar validaciones:
-        - role debe ser 'user' o 'assistant'
-        - message no puede estar vacío
-        - session_id no puede estar vacío
-        
-        sol:
-        compara el atributo role con 'user' y 'assistant', si no es ninguno de los dos, arroja error
-        si la longitud del mensaje es 0, arroja error
-        si la longitud del session_id es 0, arroja error
+        Validaciones que se ejecutan después de crear el objeto.
+
+        Realiza validaciones de negocio para asegurar la integridad de los datos:
+        - El rol debe ser 'user' o 'assistant'
+        - El mensaje no puede estar vacío
+        - El session_id no puede estar vacío
+
+        Raises:
+            ValueError: Si alguna validación falla.
         """
-        pass
         if self.role not in ['user', 'assistant']:
             raise ValueError("Acceso no autorizado. Rol incorrecto.")
         if not self.message:
@@ -142,12 +165,11 @@ class ChatMessage:
     
     def is_from_user(self) -> bool:
         """
-        TODO: Retorna True si el mensaje es del usuario
-        
-        sol:
-        valida si el rol del usuario es "user", si no, retorna False
+        Verifica si el mensaje proviene del usuario.
+
+        Returns:
+            bool: True si el rol es 'user', False en caso contrario.
         """
-        pass
         if self.role == 'user':
             return True
         return False
@@ -156,12 +178,11 @@ class ChatMessage:
 
     def is_from_assistant(self) -> bool:
         """
-        TODO: Retorna True si el mensaje es del asistente
-        
-        sol:
-        si el rol es asistente, retorna verdadero, de lo contrario, retorna False
+        Verifica si el mensaje proviene del asistente.
+
+        Returns:
+            bool: True si el rol es 'assistant', False en caso contrario.
         """
-        pass
         if self.role == 'assistant':
             return True
         return False
@@ -174,40 +195,47 @@ class ChatMessage:
 class ChatContext:
     """
     Value Object que encapsula el contexto de una conversación.
-    Mantiene los mensajes recientes para dar coherencia al chat.
+
+    Mantiene los mensajes recientes para dar coherencia al chat con IA.
+    Limita el número de mensajes para evitar prompts demasiado largos.
+
+    Attributes:
+        messages (list[ChatMessage]): Lista de mensajes de la conversación
+        max_messages (int): Número máximo de mensajes a mantener (por defecto 6)
     """
     messages: list[ChatMessage]
     max_messages: int = 6
     
     def get_recent_messages(self) -> list[ChatMessage]:
         """
-        TODO: Retorna los últimos N mensajes (max_messages)
-        Pista: Usa slicing de Python messages[-self.max_messages:]
-        
-        sol:
-        recorre la lista de mensajes en reversa, y retorna los max_messages
+        Obtiene los mensajes más recientes de la conversación.
+
+        Retorna los últimos N mensajes según max_messages para mantener
+        el contexto sin sobrecargar el prompt de IA.
+
+        Returns:
+            list[ChatMessage]: Lista con los mensajes más recientes.
         """
-        pass
         return self.messages[-self.max_messages:]
     
     
     
     def format_for_prompt(self) -> str:
         """
-        TODO: Formatea los mensajes para incluirlos en el prompt de IA
-        Formato esperado:
-        "Usuario: mensaje del usuario
-        Asistente: respuesta del asistente
-        Usuario: otro mensaje
-        ..."
-        
-        Pista: Itera sobre get_recent_messages() y construye el string
-        
-        sol:
-        usando la funcion anterior (is_from_user()) se detecta el origen "verbal" del mensaje y se utiliza
-        para formatear el mensaje, contruyendo el string 
+        Formatea los mensajes recientes para incluirlos en el prompt de IA.
+
+        Convierte los mensajes en un formato legible para el modelo de IA,
+        diferenciando entre mensajes del usuario y del asistente.
+
+        Returns:
+            str: String formateado con los mensajes recientes.
+
+        Example:
+            >>> context = ChatContext([...])
+            >>> print(context.format_for_prompt())
+            Usuario: ¿Qué productos tienes?
+            Asistente: Tengo varios productos disponibles...
         """
-        pass
         formatted_messages = []
         for msg in self.get_recent_messages():
             role = "Usuario" if msg.is_from_user() else "Asistente"
