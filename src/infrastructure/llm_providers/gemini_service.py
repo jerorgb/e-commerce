@@ -11,6 +11,7 @@ import os
 import google.generativeai as genai
 
 
+
 class GeminiService:
     """
     Servicio de IA que utiliza Google Gemini para generar respuestas de chat.
@@ -24,7 +25,7 @@ class GeminiService:
         model: Instancia del modelo Gemini configurado.
     """
 
-    def __init__(self, model_name: str = "gemini-2.5-flash"):
+    def __init__(self, model_name: str = "gemini-2.0-flash"):
         """
         Inicializa el servicio de Gemini con configuración por defecto.
 
@@ -40,8 +41,8 @@ class GeminiService:
             raise EnvironmentError("GEMINI_API_KEY no está configurada en el entorno")
 
         genai.configure(api_key=api_key)
-        self.model_name = model_name
-        self.model = genai.get_model(self.model_name)
+        self.model_name = model_name          # ← assign first
+        self.model = genai.GenerativeModel(self.model_name)  # ← then use
 
     async def generate_response(self, user_message, products, context):
         """
@@ -64,10 +65,9 @@ class GeminiService:
         try:
             product_text = self.format_products_info(products)
             context_text = context.format_for_prompt() if context is not None else ""
-
             prompt = self._build_prompt(product_text, context_text, user_message)
-            session = genai.ChatSession(self.model)
-            response = await session.send_message_async(prompt)
+
+            response = await self.model.generate_content_async(prompt)  # ← fixed
 
             if hasattr(response, "text") and response.text:
                 return response.text.strip()

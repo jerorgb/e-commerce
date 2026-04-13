@@ -1,5 +1,4 @@
-﻿version: '3.9'
-
+﻿
 services:
   api:
     build:
@@ -15,7 +14,7 @@ services:
       - DATABASE_URL
     volumes:
       - ./data:/app/data
-      - .:/app
+      ### no overwrite - .:/app
     command: uvicorn src.infrastructure.api.main:app --host 0.0.0.0 --port 8000 --reload
     restart: unless-stopped
     networks:
