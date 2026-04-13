@@ -24,18 +24,18 @@ class ProductDTO(BaseModel):
     @validator('price')
     def price_must_be_positive(cls, v):
         """TODO: Valida que el precio sea mayor a 0"""
-        pass
         if v <= 0:
             raise ValueError("El precio debe ser mayor a 0")
+        return v
     
     
     
     @validator('stock')
     def stock_must_be_non_negative(cls, v):
         """TODO: Valida que el stock no sea negativo"""
-        pass
         if v < 0:
             raise ValueError("El stock no puede ser negativo")
+        return v
     
     
     
@@ -54,18 +54,18 @@ class ChatMessageRequestDTO(BaseModel):
     @validator('message')
     def message_not_empty(cls, v):
         """TODO: Valida que el mensaje no esté vacío"""
-        pass
         if not v.strip():
             raise ValueError("El mensaje no puede estar vacío")
+        return v
     
     
     
     @validator('session_id')
     def session_id_not_empty(cls, v):
         """TODO: Valida que session_id no esté vacío"""
-        pass
         if not v.strip():
             raise ValueError("El ID de sesión no puede estar vacío")
+        return v
         
         
         
